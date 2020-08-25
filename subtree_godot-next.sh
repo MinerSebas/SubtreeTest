@@ -11,7 +11,7 @@ git remote add -f -t ${repo_branch} --no-tags temp-repo ${repo_url}
 git checkout temp-repo/${repo_branch}
 git subtree split -b temp-branch -P ${extraction_folder}
 git checkout ${target_branch}
-git subtree add --squash -P addons/${extraction_target} temp-branch
+git subtree merge --squash -P addons/${extraction_target} temp-branch
 git branch -D temp-branch
 
 git remote remove temp-repo
