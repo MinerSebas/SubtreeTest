@@ -10,9 +10,9 @@ onready var TextEditor = $TextEditor
 
 onready var LastModified = $FileInfo/lastmodified
 
-onready var FileList = get_parent().get_parent().get_parent().get_node("FileList")
+onready var FileList = get_parent().get_parent().get_parent().get_parent().get_node("FileList")
 
-onready var ClosingFile = get_parent().get_parent().get_parent().get_node("ConfirmationDialog")
+onready var ClosingFile = get_parent().get_parent().get_parent().get_parent().get_node("ConfirmationDialog")
 
 onready var LastModifiedIcon = $FileInfo/lastmodified_icon
 
@@ -40,6 +40,14 @@ func _ready():
 	
 	add_to_group("vanilla_editor")
 
+func set_wrap_enabled(enabled:bool):
+	TextEditor.set_wrap_enabled(enabled)
+	TextEditor.update()
+
+func draw_minimap(value:bool):
+	TextEditor.draw_minimap(value)
+	TextEditor.update()
+
 func color_region(filextension : String): # -----------------------------> dal momento che voglio creare un editor per ogni file, renderò questa funzione singola in base all'estensione del file
 	match(filextension):
 		"bbs":
@@ -63,6 +71,7 @@ func color_region(filextension : String): # -----------------------------> dal m
 			TextEditor.add_color_region("<center>","</center>",Color8(175,238,238,255),false)
 			TextEditor.add_color_region("<right>","</right>",Color8(135,206,235,255),false)
 		"md":
+			TextEditor.add_color_region("***","***",Color8(126,186,181,255),false)
 			TextEditor.add_color_region("**","**",Color8(153,153,255,255),false)
 			TextEditor.add_color_region("*","*",Color8(153,255,153,255),false)
 			TextEditor.add_color_region("+ ","",Color8(255,178,102,255),false)
@@ -78,9 +87,15 @@ func color_region(filextension : String): # -----------------------------> dal m
 			TextEditor.add_color_region("#### ","",Color8(192,192,192,255),true)
 			TextEditor.add_color_region("##### ","",Color8(211,211,211,255),true)
 			TextEditor.add_color_region("###### ","",Color8(255,255,255,255),true)
+			TextEditor.add_color_region("> ","",Color8(172,138,79,255),true)
 		"cfg":
 			TextEditor.add_color_region("[","]",Color8(153,204,255,255),false)
 			TextEditor.add_color_region('"','"',Color8(255,255,102,255),false)
+			TextEditor.add_color_region(';','',Color8(128,128,128,255),true)
+		"ini":
+			TextEditor.add_color_region("[","]",Color8(153,204,255,255),false)
+			TextEditor.add_color_region('"','"',Color8(255,255,102,255),false)
+			TextEditor.add_color_region(';','',Color8(128,128,128,255),true)
 		_:
 			pass
 
@@ -92,7 +107,7 @@ func clean_editor():
 	current_filename = ""
 	current_path = ""
 
-func new_file_open(file_content, last_modified , current_file_path):
+func new_file_open(file_content : String, last_modified : Dictionary, current_file_path : String):
 	current_path = current_file_path
 	current_filename = current_file_path.get_file()
 	color_region(current_filename.get_extension())
